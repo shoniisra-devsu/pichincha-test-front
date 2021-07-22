@@ -1,3 +1,5 @@
 export default function Header({ title }) {
-  return <h1 className="title">{title}</h1>
+  return (
+    <h1 className="text-4xl mb-8 text-center "> Random Persona | Pichincha </h1>
+  );
 }
