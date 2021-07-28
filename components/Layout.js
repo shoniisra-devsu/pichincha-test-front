@@ -14,7 +14,7 @@ const Layout = ({ title, children }) => {
           href="https://unpkg.com/tailwindcss/dist/tailwind.min.css"
         />
       </Head>
-      <main className="container mx-auto max-w-xl pt-8 min-h-screen">
+      <main className="container mx-auto  pt-8 min-h-screen">
         <Header/>
         {children}
         <Footer/>

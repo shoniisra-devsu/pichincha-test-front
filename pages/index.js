@@ -1,16 +1,57 @@
+import React, { Component } from "react";
 import Layout from "@components/Layout";
 import Fila from "@components/Fila";
 import { useState } from "react";
-
-const Home = ({ personas }) => {
-  const [buscar, setBuscar] = useState("");
-
-  let simpleLocation = personas.map((order) => {
-    return {
-      location: order.location,
+import SearchBar from "@components/SearchBar";
+class Home extends Component {
+ 
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchInput: "",
+      personasListDefault: [],
+      personasListFiltered: [],
+      personasSlicedPage: [],
+      selectedPage: 1,
+      peoplePerPage: 10,
     };
-  });
-  return (
+    this.handleSeachInputChange = this.handleSeachInputChange.bind(this);
+  }
+
+  componentDidMount() {
+    const { personas } = this.props;
+    const firstBlogPage =
+      personas.length > this.state.peoplePerPage
+        ? personas.slice(0, this.state.peoplePerPage)
+        : personas;
+    this.setState({ peoplePerPage: 10 });
+    this.setState({ personasListDefault: personas });
+    this.setState({ personasListFiltered: personas });
+    this.setState({ personasSlicedPage: firstBlogPage });
+    this.setState({ selectedPage: 1 });
+  }
+  handleSeachInputChange(event) {
+    const searchInput = event.target.value;
+    const filteredBlogsBySearchInput = this.state.personasListDefault.filter((itemPersona) => {
+      const isIncluded = JSON.stringify(itemPersona)
+        .toLowerCase()
+        .includes(searchInput.toLowerCase());      
+      return isIncluded;
+    });
+
+    const firstBlogPage =
+      filteredBlogsBySearchInput.length > this.state.peoplePerPage
+        ? filteredBlogsBySearchInput.slice(0, this.state.peoplePerPage)
+        : filteredBlogsBySearchInput;
+
+    this.setState({ searchInput: searchInput });
+    this.setState({ personasListFiltered: filteredBlogsBySearchInput });
+    this.setState({ personasSlicedPage: firstBlogPage });
+    this.setState({ selectedPage: 1 });
+  } 
+
+  render() {
+    return (
     <Layout title="Random Persona | Pichincha">
       <h2 className="text-2xl mb-8 text-center">
         Start editing to see some magic happen!
@@ -20,7 +61,9 @@ const Home = ({ personas }) => {
           className="x-full container"
           type="text"
           placeholder="Buscar Persona"
-          onChange={handleInputChange}
+          key="random1"
+          value={this.state.searchInput}
+          onChange={this.handleSeachInputChange}
         />
        
 
@@ -34,7 +77,7 @@ const Home = ({ personas }) => {
           <th className="px-8 capitalize">coordinates.latitude</th>
           <th className="px-8 capitalize">coordinates.longitude</th>
         </tr>
-        {simpleLocation.map((item, i) => (
+        {this.state.personasSlicedPage.map((item, i) => (
           <tr>            
             <td className="px-8">{item.location.street.name}</td>
             <td className="px-8">{item.location.city}</td>
@@ -48,6 +91,9 @@ const Home = ({ personas }) => {
       </table>
     </Layout>
   );
+  }
+
+  
 };
 
 export const getStaticProps = async () => {
